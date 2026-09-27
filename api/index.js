@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database connection middleware for serverless invocations
+// Database connection middleware for Vercel serverless functions
 app.use(async (req, res, next) => {
   try {
     await connectDB();

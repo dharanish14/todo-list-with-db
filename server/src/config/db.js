@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const dns = require('dns');
 
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch (e) {
-  // Ignore DNS override errors in serverless
+// Only set custom DNS on local machines (NOT on Vercel / Serverless where AWS VPC DNS is required)
+if (!process.env.VERCEL && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  try {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+  } catch (e) {
+    // Ignore
+  }
 }
 
 let cached = global.mongoose;
@@ -19,14 +22,18 @@ const connectDB = async () => {
   }
 
   if (!cached.promise) {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/todo_db';
-    const isAtlas = mongoURI.includes('mongodb+srv');
+    const mongoURI = process.env.MONGODB_URI;
+    
+    if (!mongoURI) {
+      console.error('[Database Error] MONGODB_URI is missing from environment variables!');
+      throw new Error('MONGODB_URI environment variable is not defined.');
+    }
 
-    console.log(`[Database] Connecting to ${isAtlas ? 'MongoDB Atlas Cluster' : 'Local MongoDB Instance'}...`);
+    const isAtlas = mongoURI.includes('mongodb+srv');
+    console.log(`[Database] Connecting to ${isAtlas ? 'MongoDB Atlas Cluster' : 'Local MongoDB'}...`);
 
     const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 8000,
+      serverSelectionTimeoutMS: 10000,
     };
 
     cached.promise = mongoose.connect(mongoURI, opts).then((mongooseInstance) => {
