@@ -1,27 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const dns = require('dns');
 const connectDB = require('../server/src/config/db');
 const todoRoutes = require('../server/src/routes/todoRoutes');
 
-// Load environment variables
 dotenv.config();
-
-// Configure DNS for Atlas SRV lookup if needed
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch (e) {
-  // Ignore DNS set errors in serverless if restricted
-}
-
-// Connect to MongoDB
-connectDB();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Database connection middleware for serverless invocations
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('Serverless DB Middleware Error:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Database connection failed: ' + err.message
+    });
+  }
+});
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({
