@@ -1,6 +1,9 @@
 # 🚀 TaskFlow Pro - Modern To-Do Web Application
 
-> Built with Node.js, Express, React, Vite, MongoDB Atlas integration, and Docker containerization.
+> Built with Node.js, Express, React, Vite, MongoDB Atlas integration, Docker containerization, and Vercel Serverless deployment.
+
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployment-blue?logo=vercel)](https://vercel.com)
+
 
 TaskFlow Pro is a full-stack task & productivity management application. It features a modern **Glassmorphic UI**, vibrant animations, dark/light theme switching, priority levels, subtask checklists, productivity statistics dashboard, category filters, and full **Docker containerization**.
 
