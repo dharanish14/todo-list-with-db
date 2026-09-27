@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Trash2, Check, Sparkles, Loader2, Database } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return '/api';
+  }
+  return envUrl || '/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
 
 export default function App() {
   const [todos, setTodos] = useState([]);
